@@ -3,6 +3,8 @@ import 'dart:convert';
 
 void main() {
   requestData();
+
+  requestAsync();
 }
 
 requestData() {
@@ -16,4 +18,15 @@ requestData() {
         listAccounts.firstWhere((element) => element["name"] == "Carla");
     print(mapCarla["balance"]);
   });
+}
+
+requestAsync() async {
+  String url =
+      "https://gist.githubusercontent.com/Richard-Satilite/2a58c22ad081f34ad45cfc5b87471730/raw/da939ba6dc9ec158c711ebfa8531d7928643effe/accounts.json";
+
+  Response response = await get(Uri.parse(url));
+
+  print(json.decode(response.body)[0]);
+
+  print("Último evento");
 }
