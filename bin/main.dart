@@ -1,4 +1,4 @@
-import 'package:dart_asynchronous/api_key.dart'; //THIS PACKAGE IS ONLY AVAIABLE FOR OWNER
+import 'package:dart_asynchronous/api_key.dart'; //THIS PACKAGE IS ONLY AVAIABLE FOR THE OWNER
 import 'package:http/http.dart';
 import 'dart:convert';
 
