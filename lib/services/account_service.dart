@@ -56,4 +56,71 @@ class AccountService {
           .add("${DateTime.now()} | Falha na requisição (${account.name})");
     }
   }
+
+  Future<Account> getById(String id) async {
+    List<Account> listAccounts = await getAll();
+    Account account = listAccounts.firstWhere((Account acc) => acc.id == id);
+    return account;
+  }
+
+  void updateAccount(Account account) async {
+    List<Account> listAccounts = await getAll();
+    List<Map<String, dynamic>> listContent = [];
+    for (Account acc in listAccounts) {
+      if (acc.id == account.id) {
+        acc.name = account.name;
+        acc.lastName = account.lastName;
+        acc.balance = account.balance;
+      }
+      listContent.add(acc.toMap());
+    }
+    String content = json.encode(listContent);
+
+    Response response = await patch(Uri.parse(url),
+        headers: {"Authorization": "Bearer $gistKey"},
+        body: json.encode({
+          "description": "accounts.json - UPDATE",
+          "public": true,
+          "files": {
+            "accounts.json": {"content": content}
+          }
+        }));
+
+    if (response.statusCode.toString()[0] == '2') {
+      _streamController
+          .add("${DateTime.now()} | Alteração bem sucedida (${account.name})");
+    } else {
+      _streamController.add(
+          "${DateTime.now()} | Falha na requisição para alteração (${account.name})");
+    }
+  }
+
+  void deleteAccount(Account account) async {
+    List<Account> listAccount = await getAll();
+    listAccount.remove(account);
+    List<Map<String, dynamic>> listContent = [];
+    for (Account acc in listAccount) {
+      listContent.add(acc.toMap());
+    }
+
+    String content = json.encode(listContent);
+
+    Response response = await patch(Uri.parse(url),
+        headers: {"Authorization": "Bearer $gistKey"},
+        body: json.encode({
+          "description": "accounts.json - DELETE",
+          "public": true,
+          "files": {
+            "accounts.json": {"content": content}
+          }
+        }));
+
+    if (response.statusCode.toString()[0] == '2') {
+      _streamController
+          .add("${DateTime.now()} | Delete bem sucedido (${account.name})");
+    } else {
+      _streamController.add(
+          "${DateTime.now()} | Falha na requisição para delete (${account.name})");
+    }
+  }
 }
