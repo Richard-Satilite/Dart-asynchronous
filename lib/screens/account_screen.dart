@@ -1,37 +1,52 @@
+import 'package:uuid/uuid.dart';
 import 'dart:io';
 import 'package:dart_asynchronous/models/account.dart';
 import 'package:dart_asynchronous/services/account_service.dart';
 
 class AccountScreen {
   AccountService _accountService = AccountService();
-
+  Uuid _uuid = Uuid();
   void initializeStream() {
     _accountService.streamInfos.listen((event) => print(event));
   }
 
   void runChatBot() async {
-    print("Olá, me chamo Ron! Chat Bot assistente");
+    print("\nOlá, me chamo Ron! Chat Bot assistente");
 
     bool isRunning = true;
     while (isRunning) {
-      print("Como posso te ajudar? (Digite o número desejado)");
+      print("\n\nComo posso te ajudar? (Digite o número desejado)");
       print("1 - Ver todas as contas.");
-      print("2 - Adicionar uma conta de exemplo.");
+      print("2 - Adicionar uma conta.");
       print("3 - Sair\n");
       String? input = stdin.readLineSync();
-      if (input != Null) {
+      if (input != null) {
         switch (input) {
           case "1":
             await _getAllAccounts();
             break;
           case "2":
-            await _addExampleAccount();
+            String? name, lastName;
+            double? parsedBalance;
+            print("\nDigite o nome:");
+            name = stdin.readLineSync();
+            print("\nDigite o Sobrenome:");
+            lastName = stdin.readLineSync();
+            print("\nDigite o saldo:");
+            parsedBalance = double.tryParse(stdin.readLineSync()!);
+            if (name != null && lastName != null && parsedBalance != null) {
+              await _addAccount(name, lastName, parsedBalance);
+            } else {
+              print(
+                  "\nUm ou mais valores digitados é(são) inválido(s)! Digite novamente");
+            }
             break;
           case "3":
             isRunning = false;
             print("Até mais!");
             break;
           default:
+            print("\nOpção inválida! Digite apenas umas das opções.");
         }
       }
     }
@@ -44,11 +59,10 @@ class AccountScreen {
     }
   }
 
-  Future<void> _addExampleAccount() async {
-    Account exampleAcc =
-        Account(id: "NEWID", name: "Jhon", lastName: "Doe", balance: 699.89);
-
-    _accountService.addAccount(exampleAcc);
-    print("Conta do ${exampleAcc.name} ${exampleAcc.lastName} adicionada!");
+  Future<void> _addAccount(String name, String lastName, double balance) async {
+    Account acc = Account(
+        id: _uuid.v1(), name: name, lastName: lastName, balance: balance);
+    await _accountService.addAccount(acc);
+    print("Conta do ${acc.name} ${acc.lastName} adicionada!");
   }
 }
