@@ -7,19 +7,20 @@ import 'package:dart_asynchronous/models/account.dart';
 class AccountService {
   final StreamController<String> _streamController = StreamController<String>();
   Stream<String> get streamInfos => _streamController.stream;
+  String url;
 
-  String url =
-      "https://gist.githubusercontent.com/Richard-Satilite/2a58c22ad081f34ad45cfc5b87471730/raw/da939ba6dc9ec158c711ebfa8531d7928643effe/accounts.json";
+  AccountService(
+      {this.url =
+          "https://api.github.com/gists/2a58c22ad081f34ad45cfc5b87471730"});
 
   Future<List<Account>> getAll() async {
     Response response = await get(Uri.parse(url));
     _streamController.add("${DateTime.now()} | Requisição de leitura");
-
     Map<String, dynamic> mapResponse = json.decode(response.body);
     List<dynamic> listDynamic =
-        json.decode(mapResponse["files"]["accounts.json"]["content"]);
-
+        json.decode(mapResponse['files']['accounts.json']['content']);
     List<Account> listAccounts = [];
+
     for (dynamic dyn in listDynamic) {
       Map<String, dynamic> mapAccount = dyn as Map<String, dynamic>;
       Account account = Account.fromMap(mapAccount);
@@ -37,6 +38,7 @@ class AccountService {
     for (Account acc in listAccounts) {
       listContent.add(acc.toMap());
     }
+
     String content = json.encode(listContent);
 
     Response response = await post(Uri.parse(url),
@@ -59,8 +61,8 @@ class AccountService {
 
   Future<Account> getById(String id) async {
     List<Account> listAccounts = await getAll();
-    Account account = listAccounts.firstWhere((Account acc) => acc.id == id);
-    return account;
+    return listAccounts.firstWhere((Account acc) => acc.id == id,
+        orElse: () => throw Exception("Account with id $id not found."));
   }
 
   void updateAccount(Account account) async {
@@ -77,9 +79,13 @@ class AccountService {
     String content = json.encode(listContent);
 
     Response response = await patch(Uri.parse(url),
-        headers: {"Authorization": "Bearer $gistKey"},
+        headers: {
+          "Authorization": "Bearer $gistKey",
+          "Content-type": "application/json",
+          "X-GitHub-Api-Version": "2022-11-28"
+        },
         body: json.encode({
-          "description": "accounts.json - UPDATE",
+          "description": "accounts.json",
           "public": true,
           "files": {
             "accounts.json": {"content": content}
@@ -91,7 +97,7 @@ class AccountService {
           .add("${DateTime.now()} | Alteração bem sucedida (${account.name})");
     } else {
       _streamController.add(
-          "${DateTime.now()} | Falha na requisição para alteração (${account.name})");
+          "${DateTime.now()} | Falha na requisição para alteração (${response.statusCode})");
     }
   }
 
@@ -106,9 +112,13 @@ class AccountService {
     String content = json.encode(listContent);
 
     Response response = await patch(Uri.parse(url),
-        headers: {"Authorization": "Bearer $gistKey"},
+        headers: {
+          "Authorization": "Bearer $gistKey",
+          "Content-type": "application/json",
+          "X-GitHub-Api-Version": "2022-11-28"
+        },
         body: json.encode({
-          "description": "accounts.json - DELETE",
+          "description": "accounts.json",
           "public": true,
           "files": {
             "accounts.json": {"content": content}
@@ -120,7 +130,7 @@ class AccountService {
           .add("${DateTime.now()} | Delete bem sucedido (${account.name})");
     } else {
       _streamController.add(
-          "${DateTime.now()} | Falha na requisição para delete (${account.name})");
+          "${DateTime.now()} | Falha na requisição para delete (${response.statusCode})");
     }
   }
 }
