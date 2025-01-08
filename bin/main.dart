@@ -1,4 +1,7 @@
-import 'package:dart_asynchronous/models/account.dart';
-import 'package:dart_asynchronous/services/account_service.dart';
+import 'package:dart_asynchronous/screens/account_screen.dart';
 
-void main() {}
+void main() {
+  AccountScreen accountScreen = AccountScreen();
+  accountScreen.initializeStream();
+  accountScreen.runChatBot();
+}
