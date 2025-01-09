@@ -66,14 +66,24 @@ class AccountScreen {
       print("\nNão foi possível realizar a conexão com os dados!");
       print("Tente novamente mais tarde.\n");
     } finally {
-      print("${DateTime.now()} | Tentativa de consulta");
+      print("\n${DateTime.now()} | Tentativa de consulta\n");
     }
   }
 
   Future<void> _addAccount(String name, String lastName, double balance) async {
     Account acc = Account(
         id: _uuid.v1(), name: name, lastName: lastName, balance: balance);
-    await _accountService.addAccount(acc);
-    print("Conta do ${acc.name} ${acc.lastName} adicionada!");
+    try {
+      await _accountService.addAccount(acc);
+      print("Conta do ${acc.name} ${acc.lastName} adicionada!");
+    } on ClientException catch (e) {
+      print("\nNão foi possível realizar contato com o servidor.");
+      print("Error: ${e.message}\n${e.uri}\n");
+    } on Exception {
+      print("\nNão foi possível realizar a conexão com os dados!");
+      print("Tente novamente mais tarde.\n");
+    } finally {
+      print("\n${DateTime.now()} | Tentativa de adição de conta\n");
+    }
   }
 }
