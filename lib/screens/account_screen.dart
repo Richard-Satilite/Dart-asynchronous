@@ -1,3 +1,4 @@
+import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:io';
 import 'package:dart_asynchronous/models/account.dart';
@@ -58,6 +59,9 @@ class AccountScreen {
       for (Account acc in listAccounts) {
         print("\n${acc.id}\n${acc.name}\n${acc.lastName}\n${acc.balance}\n");
       }
+    } on ClientException catch (clientException) {
+      print("Não foi possível realizar contato com o servidor.");
+      print("Error:\n${clientException.message}\n${clientException.uri}\n");
     } on Exception {
       print("\nNão foi possível realizar a conexão com os dados!");
       print("Tente novamente mais tarde.\n");
