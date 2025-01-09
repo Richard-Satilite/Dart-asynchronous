@@ -65,6 +65,8 @@ class AccountScreen {
     } on Exception {
       print("\nNão foi possível realizar a conexão com os dados!");
       print("Tente novamente mais tarde.\n");
+    } finally {
+      print("${DateTime.now()} | Tentativa de consulta");
     }
   }
 
