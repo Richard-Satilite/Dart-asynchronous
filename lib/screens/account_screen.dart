@@ -53,9 +53,14 @@ class AccountScreen {
   }
 
   Future<void> _getAllAccounts() async {
-    List<Account> listAccounts = await _accountService.getAll();
-    for (Account acc in listAccounts) {
-      print("\n${acc.id}\n${acc.name}\n${acc.lastName}\n${acc.balance}\n");
+    try {
+      List<Account> listAccounts = await _accountService.getAll();
+      for (Account acc in listAccounts) {
+        print("\n${acc.id}\n${acc.name}\n${acc.lastName}\n${acc.balance}\n");
+      }
+    } on Exception {
+      print("\nNão foi possível realizar a conexão com os dados!");
+      print("Tente novamente mais tarde.\n");
     }
   }
 
