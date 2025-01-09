@@ -11,7 +11,7 @@ class AccountService {
 
   AccountService(
       {this.url =
-          "https://api.github.com.br/gists/2a58c22ad081f34ad45cfc5b87471730"});
+          "https://api.github.com/gists/2a58c22ad081f34ad45cfc5b87471730"});
 
   Future<List<Account>> getAll() async {
     Response response = await get(Uri.parse(url));
